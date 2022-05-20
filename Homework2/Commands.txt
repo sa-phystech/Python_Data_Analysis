@@ -1,0 +1,204 @@
+Пункт 1
+
+sqlite> .open Zhuravlev_DA.db
+sqlite> .mode csv
+sqlite> .import C:/Users/thinkpad/Desktop/HW2/metro_countries_cities.csv Cities
+sqlite> .import C:/Users/thinkpad/Desktop/HW2/metro_countries_in_progress.csv in_progress
+sqlite> .import C:/Users/thinkpad/Desktop/HW2/metro_countries_total.csv Total
+sqlite> .tables
+Cities       Total        in_progress
+
+Информация о таблицах
+
+sqlite> PRAGMA table_info(Cities);
+0,city,TEXT,0,,0
+1,country,TEXT,0,,0
+2,name,TEXT,0,,0
+3,year,TEXT,0,,0
+4,year_last_expansion,TEXT,0,,0
+5,stations,TEXT,0,,0
+6,length_km,TEXT,0,,0
+7,annual_ridership_mill,TEXT,0,,0
+8,region,TEXT,0,,0
+sqlite> PRAGMA table_info(Total);
+0,country,TEXT,0,,0
+1,systems,TEXT,0,,0
+2,length,TEXT,0,,0
+3,lines,TEXT,0,,0
+4,stations,TEXT,0,,0
+5,annual_ridership_mill,TEXT,0,,0
+6,inauguration,TEXT,0,,0
+7,region,TEXT,0,,0
+sqlite> PRAGMA table_info(in_progress);
+0,city,TEXT,0,,0
+1,country,TEXT,0,,0
+2,name,TEXT,0,,0
+3,start_construction,TEXT,0,,0
+4,planned_opening,TEXT,0,,0
+5,region,TEXT,0,,0
+
+Пункт 2
+
+sqlite> SELECT COUNT(DISTINCT country) FROM Cities;
+59
+sqlite> SELECT country, COUNT(country) AS value_occurence FROM Cities GROUP BY country ORDER BY value_occurence DESC LIMIT 1;
+China,43
+
+Пункт 3
+
+sqlite> CREATE TABLE Metro_Moscow AS SELECT * FROM Cities WHERE city="Moscow";
+sqlite> SELECT * FROM Metro_Moscow;
+Moscow,Russia,"Moscow Metro",1935,2021,203,4357,1618.2,asia
+
+Пункт 5
+
+sqlite> CREATE TABLE Australia AS SELECT * FROM Cities WHERE country="Australia" AND year>2000;
+sqlite> SELECT * FROM Australia;
+Sydney,Australia,"Sydney Metro",2019,2019,13,36,12.9,australia
+
+Пункт 6
+
+sqlite> SELECT name FROM in_progress WHERE planned_opening=2022;
+"Dhaka Metro"
+"Jinhua Rail Transit"
+"Nantong Metro"
+"Qingyuan Maglev"
+"Taizhou Rail Transit"
+"Quito Metro"
+"Navi Mumbai Metro"
+"Karaj Metro "
+"Kermanshah Metro "
+"Qom Metro"
+"Lagos Rail Mass Transit"
+"Riyadh Metro"
+"Honolulu Rail Transit"
+sqlite> SELECT name FROM in_progress WHERE planned_opening>=2023;
+"Guilin Metro"
+"Liuzhou Metro"
+"Shantou Metro"
+"Bogota Metro"
+"Thessaloniki Metro"
+"Agra Metro"
+"Bhopal Metro"
+"Indore Metro"
+"Patna Metro"
+"Surat Metro"
+"Abidjan Metro"
+"Belgrade Metro"
+"Gebze Metro"
+"Mersin Metro"
+"New Taipei Metro"
+"Ho Chi Minh City Metro"
+sqlite> SELECT COUNT(name) FROM in_progress WHERE planned_opening=2022;
+13
+sqlite>  SELECT COUNT(name) FROM in_progress WHERE planned_opening>=2023;
+16
+
+Пункт 7
+
+sqlite> CREATE TABLE TotalEuropeAsia AS SELECT * FROM Total WHERE region="asia" OR region="europe";
+sqlite> CREATE TABLE TotalNotEuropeAsia AS SELECT * FROM Total WHERE region="asia" OR region<>"europe";
+sqlite> CREATE TABLE TotalAmerica AS SELECT * FROM Total WHERE region="latin_america";
+sqlite> .tables
+Australia           Metro_Moscow        TotalAmerica        TotalNotEuropeAsia
+Cities              Total               TotalEuropeAsia     in_progress
+sqlite> SELECT DISTINCT country FROM TotalEuropeAsia ORDER BY country;
+Armenia
+Austria
+Azerbaijan
+Belarus
+Belgium
+Bulgaria
+China
+"Czech Republic"
+Denmark
+Finland
+France
+Georgia
+Germany
+Greece
+Hungary
+India
+Indonesia
+Iran
+Italy
+Japan
+Kazakhstan
+Malaysia
+Netherlands
+"North Korea"
+Norway
+Pakistan
+Philippines
+Poland
+Portugal
+Qatar
+Romania
+Russia
+Singapore
+"South Korea"
+Spain
+Sweden
+Switzerland
+Taiwan
+Thailand
+Turkey
+Ukraine
+"United Arab Emirates"
+"United Kingdom"
+Uzbekistan
+Vietnam
+sqlite> SELECT DISTINCT country FROM TotalNotEuropeAsia ORDER BY country;
+Algeria
+Argentina
+Armenia
+Australia
+Azerbaijan
+Brazil
+Canada
+Chile
+China
+Colombia
+"Dominican Republic"
+Egypt
+Georgia
+India
+Indonesia
+Iran
+Japan
+Kazakhstan
+Malaysia
+Mexico
+"North Korea"
+Pakistan
+Panama
+Peru
+Philippines
+Qatar
+Russia
+Singapore
+"South Korea"
+Taiwan
+Thailand
+Turkey
+"United Arab Emirates"
+"United States"
+Uzbekistan
+Venezuela
+Vietnam
+sqlite> SELECT DISTINCT country FROM TotalAmerica ORDER BY country;
+Argentina
+Brazil
+Chile
+Colombia
+"Dominican Republic"
+Mexico
+Panama
+Peru
+Venezuela
+
+Пункт 4 и Пункт 8
+
+sqlite> CREATE TABLE ResultJoin AS SELECT * FROM Total LEFT OUTER JOIN in_progress ON Total.country=in_progress.country UNION SELECT * FROM in_progress LEFT OUTER JOIN Total ON in_progress.country=Total.country;
+sqlite> SELECT * FROM ResultJoin GROUP BY country ORDER BY country;
+sqlite> SELECT * FROM ResultJoin GROUP BY city ORDER BY city;
